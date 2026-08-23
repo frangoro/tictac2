@@ -46,6 +46,7 @@ dependencies:
 
   # Para la gestión del estado limpia
   provider: ^6.1.2
+  wakelock_plus: ^1.7.0
 
 dev_dependencies:
   flutter_test:

@@ -1,9 +1,23 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:screen_brightness/screen_brightness.dart';
 import 'package:android_alarm_manager_plus/android_alarm_manager_plus.dart';
+import 'package:wakelock_plus/wakelock_plus.dart';
 
 const int kSolarAlarmId = 101;
+
+const AndroidNotificationDetails androidPlatformChannelSpecifics =
+    AndroidNotificationDetails(
+  'canal_alarma_id',
+  'Alarmas',
+  channelDescription: 'Canal para alertas de alarma',
+  importance: Importance.max,
+  priority: Priority.max,
+  fullScreenIntent: true, // <-- ESENCIAL: Abre la app o notificación a pantalla completa sobre el bloqueo
+  category: AndroidNotificationCategory.alarm, // Indica al SO que es una alarma real
+  visibility: NotificationVisibility.public,
+);
 
 @pragma('vm:entry-point')
 void alarmCallback() {
@@ -55,6 +69,8 @@ class _SolarAlarmScreenState extends State<SolarAlarmScreen> {
   @override
   void initState() {
     super.initState();
+    // Ejecutar cuando se active el temporizador/alarma:
+    WakelockPlus.enable(); 
     // Revisa la hora cada 5 segundos si la app permanece abierta
     _checkerTimer = Timer.periodic(const Duration(seconds: 5), (_) {
       if (_isAlarmEnabled && !_isSimulating) {
@@ -71,6 +87,7 @@ class _SolarAlarmScreenState extends State<SolarAlarmScreen> {
     _simulationTimer?.cancel();
     _checkerTimer?.cancel();
     _resetBrightness();
+    WakelockPlus.disable();
     super.dispose();
   }
 
